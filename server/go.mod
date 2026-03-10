@@ -3,6 +3,8 @@ module github.com/Lovenson2000/frontend_assignment
 go 1.25.3
 
 require (
+	github.com/jmoiron/sqlx v1.4.0
+	github.com/lib/pq v1.10.9
 	github.com/andybalholm/brotli v1.2.0 // indirect
 	github.com/gofiber/fiber/v3 v3.1.0 // indirect
 	github.com/gofiber/schema v1.7.0 // indirect
