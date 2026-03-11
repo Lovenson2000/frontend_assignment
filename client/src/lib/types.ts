@@ -12,3 +12,7 @@ export type MenuItem = {
   photoUrl: string
   price: number
 }
+
+export type GetMenuResponse = {
+  items: MenuItem[]
+}

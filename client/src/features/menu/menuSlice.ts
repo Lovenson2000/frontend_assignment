@@ -16,7 +16,7 @@ const menuSlice = createSlice({
     setMenuItems: (state, action: PayloadAction<MenuItem[]>) => {
       state.items = action.payload
     },
-    clearMenuItems: (state) => {
+    clearMenuItems: state => {
       state.items = []
     },
   },
