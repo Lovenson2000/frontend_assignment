@@ -84,6 +84,23 @@ func InitMenuStore(db *sqlx.DB) error {
 	return nil
 }
 
+func InitOrderStore(db *sqlx.DB) error {
+	_, err := db.Exec(
+		`CREATE TABLE IF NOT EXISTS orders (
+			id TEXT PRIMARY KEY,
+			items JSONB NOT NULL,
+			total_price NUMERIC(10, 2) NOT NULL CHECK (total_price >= 0),
+			status TEXT NOT NULL,
+			created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+		)`,
+	)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
 func getEnv(key, fallback string) string {
 	if value := os.Getenv(key); value != "" {
 		return value

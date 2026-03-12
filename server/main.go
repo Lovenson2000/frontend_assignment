@@ -18,6 +18,9 @@ func main() {
 	if err := configs.InitMenuStore(db); err != nil {
 		log.Fatalf("init menu store: %v", err)
 	}
+	if err := configs.InitOrderStore(db); err != nil {
+		log.Fatalf("init order store: %v", err)
+	}
 
 	app := fiber.New(fiber.Config{
 		BodyLimit: 100 * 1024 * 1024,
@@ -28,6 +31,7 @@ func main() {
 	})
 
 	routes.RegisterMenuRoutes(app, db)
+	routes.RegisterOrderRoutes(app, db)
 
 	log.Fatal(app.Listen(":8000"))
 }
