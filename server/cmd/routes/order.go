@@ -16,4 +16,8 @@ func RegisterOrderRoutes(app *fiber.App, db *sqlx.DB) {
 	api.Post("/orders", func(c fiber.Ctx) error {
 		return controllers.PlaceOrder(db, c)
 	})
+
+	api.Delete("/orders", func(c fiber.Ctx) error {
+		return controllers.DeleteAllOrders(db, c)
+	})
 }

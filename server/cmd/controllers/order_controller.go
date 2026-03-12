@@ -183,3 +183,15 @@ func GetAllOrders(db *sqlx.DB, c fiber.Ctx) error {
 		"orders": orders,
 	})
 }
+
+func DeleteAllOrders(db *sqlx.DB, c fiber.Ctx) error {
+	if _, err := db.Exec(`DELETE FROM orders`); err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"error": "failed to delete orders",
+		})
+	}
+
+	return c.JSON(fiber.Map{
+		"message": "all orders deleted",
+	})
+}
