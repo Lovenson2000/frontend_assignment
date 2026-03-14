@@ -1,11 +1,36 @@
-import { useAppDispatch } from "../app/hooks"
+import { useAppDispatch, useAppSelector } from "../app/hooks"
 import { addToCart } from "../features/cart/cartSlice"
 import { MenuItem } from "../lib/types"
 import { formatCategory } from "../utils/utils"
 import Button from "./Button"
 
-export default function MenuCard({ item }: { item: MenuItem }) {
+export default function MenuCard({
+  item,
+  onItemAdded,
+}: {
+  item: MenuItem
+  onItemAdded?: (itemName: string) => void
+}) {
   const dispatch = useAppDispatch()
+  const isInCart = useAppSelector(state =>
+    state.cart.items.some(cartItem => cartItem.menuItemId === item.id),
+  )
+
+  const handleAddToCart = () => {
+    if (isInCart) {
+      return
+    }
+
+    dispatch(
+      addToCart({
+        menuItemId: item.id,
+        unitPrice: item.price,
+        name: item.name,
+        photoUrl: item.photoUrl,
+      }),
+    )
+    onItemAdded?.(item.name)
+  }
 
   return (
     <article className="flex h-full flex-col overflow-hidden rounded-lg border border-slate-200 bg-white">
@@ -37,18 +62,12 @@ export default function MenuCard({ item }: { item: MenuItem }) {
 
         <Button
           buttonProps={{
-            bgColor: "orange-400",
-            textColor: "white",
-            text: "Add to Cart",
-            onClick: () =>
-              dispatch(
-                addToCart({
-                  menuItemId: item.id,
-                  unitPrice: item.price,
-                  name: item.name,
-                  photoUrl: item.photoUrl,
-                }),
-              ),
+            bgColor: isInCart ? "orange-400/25" : "orange-400",
+            borderColor: isInCart ? "border-slate-200" : undefined,
+            textColor: isInCart ? "orange-500" : "white",
+            text: isInCart ? "Added to Cart" : "Add to Cart",
+            disabled: isInCart,
+            onClick: handleAddToCart,
           }}
         />
       </div>

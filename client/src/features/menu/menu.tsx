@@ -1,6 +1,6 @@
 import CartPanel from "../cart/CartPanel"
 import { useGetMenuItemsQuery } from "./menuApi"
-import MenuCard from "../../components/MenuCard"
+import MenuItemsContainer from "../../components/MenuItemsContainer"
 
 export default function Menu() {
   const {
@@ -47,12 +47,7 @@ export default function Menu() {
             <p className="text-sm text-slate-500">Refreshing menu...</p>
           ) : null}
         </div>
-
-        <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
-          {items.map(item => (
-            <MenuCard key={item.id} item={item} />
-          ))}
-        </div>
+        <MenuItemsContainer menuItems={items} />
       </section>
       <div className="order-1 lg:order-2 lg:sticky lg:top-24 lg:self-start">
         <CartPanel />

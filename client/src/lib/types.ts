@@ -36,5 +36,6 @@ export type ButtonProps = {
   textColor: string
   text: string
   className?: string
+  disabled?: boolean
   onClick: () => void
 }
