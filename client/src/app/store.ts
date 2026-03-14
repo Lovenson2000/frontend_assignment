@@ -1,9 +1,11 @@
 import { combineReducers, configureStore } from "@reduxjs/toolkit"
+import { cartReducer } from "../features/cart/cartSlice"
 import { menuApi } from "../features/menu/menuApi"
 import { menuReducer } from "../features/menu/menuSlice"
 
 // THIS WAY, MORE REDUCERS CAN BE ADDED IN THE FUTURE WITHOUT CHANGING THIS FILE
 const rootReducer = combineReducers({
+  cart: cartReducer,
   menu: menuReducer,
   [menuApi.reducerPath]: menuApi.reducer,
 })
