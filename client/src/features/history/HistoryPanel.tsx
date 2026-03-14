@@ -19,9 +19,7 @@ export default function HistoryPanel() {
 
     try {
       await clearOrders().unwrap()
-    } catch {
-      // Error state is rendered below.
-    }
+    } catch {}
   }
 
   if (isLoading) {

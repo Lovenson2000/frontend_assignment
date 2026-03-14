@@ -60,11 +60,24 @@ export type PlaceOrderResponse = {
   order: Order
 }
 
+export type ButtonBackgroundColor =
+  | "white"
+  | "orange-400"
+  | "orange-400/25"
+  | "slate-800"
+  | "red-50"
+
+export type ButtonHoverBackgroundColor = "slate-200" | "slate-600" | "red-100"
+
+export type ButtonBorderColor = "border-slate-200" | "border-red-200"
+
+export type ButtonTextColor = "white" | "orange-500" | "slate-800" | "red-600"
+
 export type ButtonProps = {
-  bgColor: string
-  hoverBgColor?: string
-  borderColor?: string
-  textColor: string
+  bgColor: ButtonBackgroundColor
+  hoverBgColor?: ButtonHoverBackgroundColor
+  borderColor?: ButtonBorderColor
+  textColor: ButtonTextColor
   text: string
   className?: string
   disabled?: boolean
