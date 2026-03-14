@@ -2,15 +2,29 @@ import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import Button from "../../components/Button"
 import CartItem from "../../components/CartItem"
 import { CartItemType } from "../../lib/types"
+import { usePlaceOrderMutation } from "../menu/menuApi"
 import { findTotalItems, findTotalPrice } from "../../utils/utils"
 import { clearCart } from "./cartSlice"
 
 export default function CartPanel() {
   const dispatch = useAppDispatch()
   const items = useAppSelector(state => state.cart.items)
+  const [placeOrder, { isLoading: isSubmitting, error: placeOrderError }] =
+    usePlaceOrderMutation()
 
   const totalItems = findTotalItems(items)
   const totalPrice = findTotalPrice(items)
+
+  const handlePlaceOrder = async () => {
+    if (items.length === 0 || isSubmitting) {
+      return
+    }
+
+    try {
+      await placeOrder({ items }).unwrap()
+      dispatch(clearCart())
+    } catch {}
+  }
 
   return (
     <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
@@ -39,6 +53,12 @@ export default function CartPanel() {
               </p>
             </div>
 
+            {placeOrderError ? (
+              <p className="text-sm text-red-600">
+                Failed to place order. Please try again.
+              </p>
+            ) : null}
+
             <div className="w-full flex gap-3">
               <Button
                 buttonProps={{
@@ -56,11 +76,10 @@ export default function CartPanel() {
                   className: "w-1/2",
                   bgColor: "slate-800",
                   hoverBgColor: "slate-600",
-                  text: "Submit Order",
+                  text: isSubmitting ? "Submitting..." : "Submit Order",
                   textColor: "white",
-                  onClick: () => {
-                    console.log("Submit Order clicked")
-                  },
+                  disabled: isSubmitting,
+                  onClick: handlePlaceOrder,
                 }}
               />
             </div>

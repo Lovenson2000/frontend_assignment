@@ -10,6 +10,11 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
+type menuItemLookup struct {
+	ID       string `db:"id"`
+	PhotoURL string `db:"photo_url"`
+}
+
 type placeOrderRequest struct {
 	Items []models.CartItem `json:"items"`
 }
@@ -57,7 +62,7 @@ func PlaceOrder(db *sqlx.DB, c fiber.Ctx) error {
 	}
 
 	query, args, err := sqlx.In(
-		`SELECT id, name, price FROM menu_items WHERE id IN (?)`,
+		`SELECT id, name, photo_url, price FROM menu_items WHERE id IN (?)`,
 		itemIDs,
 	)
 	if err != nil {
@@ -69,9 +74,10 @@ func PlaceOrder(db *sqlx.DB, c fiber.Ctx) error {
 	query = db.Rebind(query)
 
 	var menuItems []struct {
-		ID    string  `db:"id"`
-		Name  string  `db:"name"`
-		Price float64 `db:"price"`
+		ID       string  `db:"id"`
+		Name     string  `db:"name"`
+		PhotoURL string  `db:"photo_url"`
+		Price    float64 `db:"price"`
 	}
 	if err := db.Select(&menuItems, query, args...); err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
@@ -80,16 +86,19 @@ func PlaceOrder(db *sqlx.DB, c fiber.Ctx) error {
 	}
 
 	menuItemsByID := make(map[string]struct {
-		Name  string
-		Price float64
+		Name     string
+		PhotoURL string
+		Price    float64
 	}, len(menuItems))
 	for _, item := range menuItems {
 		menuItemsByID[item.ID] = struct {
-			Name  string
-			Price float64
+			Name     string
+			PhotoURL string
+			Price    float64
 		}{
-			Name:  item.Name,
-			Price: item.Price,
+			Name:     item.Name,
+			PhotoURL: item.PhotoURL,
+			Price:    item.Price,
 		}
 	}
 
@@ -107,6 +116,7 @@ func PlaceOrder(db *sqlx.DB, c fiber.Ctx) error {
 		orderItems = append(orderItems, models.OrderItem{
 			MenuItemID: item.MenuItemID,
 			Name:       menuItem.Name,
+			PhotoURL:   menuItem.PhotoURL,
 			UnitPrice:  menuItem.Price,
 			Quantity:   item.Quantity,
 			LineTotal:  lineTotal,
@@ -159,6 +169,55 @@ func GetAllOrders(db *sqlx.DB, c fiber.Ctx) error {
 		})
 	}
 
+	menuItemIDs := make(map[string]struct{})
+	for _, record := range records {
+		var items []models.OrderItem
+		if len(record.Items) > 0 {
+			if err := json.Unmarshal(record.Items, &items); err != nil {
+				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+					"error": "failed to decode order items",
+				})
+			}
+		}
+
+		for _, item := range items {
+			if item.PhotoURL == "" && item.MenuItemID != "" {
+				menuItemIDs[item.MenuItemID] = struct{}{}
+			}
+		}
+	}
+
+	menuItemPhotosByID := make(map[string]string, len(menuItemIDs))
+	if len(menuItemIDs) > 0 {
+		ids := make([]string, 0, len(menuItemIDs))
+		for id := range menuItemIDs {
+			ids = append(ids, id)
+		}
+
+		lookupQuery, args, err := sqlx.In(
+			`SELECT id, photo_url FROM menu_items WHERE id IN (?)`,
+			ids,
+		)
+		if err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": "failed to prepare order image lookup",
+			})
+		}
+
+		lookupQuery = db.Rebind(lookupQuery)
+
+		var menuItems []menuItemLookup
+		if err := db.Select(&menuItems, lookupQuery, args...); err != nil {
+			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+				"error": "failed to fetch order item images",
+			})
+		}
+
+		for _, item := range menuItems {
+			menuItemPhotosByID[item.ID] = item.PhotoURL
+		}
+	}
+
 	orders := make([]models.Order, 0, len(records))
 	for _, record := range records {
 		var items []models.OrderItem
@@ -167,6 +226,12 @@ func GetAllOrders(db *sqlx.DB, c fiber.Ctx) error {
 				return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 					"error": "failed to decode order items",
 				})
+			}
+		}
+
+		for index := range items {
+			if items[index].PhotoURL == "" {
+				items[index].PhotoURL = menuItemPhotosByID[items[index].MenuItemID]
 			}
 		}
 

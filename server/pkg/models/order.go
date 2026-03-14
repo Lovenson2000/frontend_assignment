@@ -13,6 +13,7 @@ const (
 type OrderItem struct {
 	MenuItemID string  `json:"menuItemId"`
 	Name       string  `json:"name"`
+	PhotoURL   string  `json:"photoUrl"`
 	UnitPrice  float64 `json:"unitPrice"`
 	Quantity   int     `json:"quantity"`
 	LineTotal  float64 `json:"lineTotal"`

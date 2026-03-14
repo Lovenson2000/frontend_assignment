@@ -1,26 +1,9 @@
 import { useState } from "react"
 import NavBar from "./components/NavBar"
+import HistoryPanel from "./features/history/HistoryPanel"
 import Menu from "./features/menu/menu"
 import { View } from "./lib/types"
 import { viewContent } from "./lib/constants"
-
-function PlaceholderPanel({
-  title,
-  description,
-}: {
-  title: string
-  description: string
-}) {
-  return (
-    <section
-      className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm"
-      aria-label={title}
-    >
-      <h2 className="text-xl font-semibold text-slate-900">{title}</h2>
-      <p className="mt-2 text-sm text-slate-600">{description}</p>
-    </section>
-  )
-}
 
 export const App = () => {
   const [activeView, setActiveView] = useState<View>("menu")
@@ -41,12 +24,7 @@ export const App = () => {
         </section>
 
         {activeView === "menu" ? <Menu /> : null}
-        {activeView === "history" ? (
-          <PlaceholderPanel
-            title="History"
-            description="Submitted orders and their statuses can be shown here once the history UI is connected."
-          />
-        ) : null}
+        {activeView === "history" ? <HistoryPanel /> : null}
       </main>
     </div>
   )
