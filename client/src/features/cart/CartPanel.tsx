@@ -1,6 +1,6 @@
 import { useAppDispatch, useAppSelector } from "../../app/hooks"
 import Button from "../../components/Button"
-import CardItem from "../../components/CardItem"
+import CartItem from "../../components/CartItem"
 import { CartItemType } from "../../lib/types"
 import { findTotalItems, findTotalPrice } from "../../utils/utils"
 import { clearCart } from "./cartSlice"
@@ -28,7 +28,7 @@ export default function CartPanel() {
       ) : (
         <div className="mt-4 space-y-4">
           {items.map(item => (
-            <CardItem key={item.menuItemId} item={item as CartItemType} />
+            <CartItem key={item.menuItemId} item={item as CartItemType} />
           ))}
 
           <div className="space-y-3 pt-2">
