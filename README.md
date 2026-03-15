@@ -12,6 +12,30 @@ Foody is a food ordering application built with React, TypeScript, Redux Toolkit
 - View submitted order history.
 - Clear the full order history.
 
+## Demo
+
+Demo video:
+
+- [Watch the demo video](<./docs/foody_demo.mov>)
+
+Screenshots:
+
+### Menu
+
+![Menu screen](<./docs/Screenshot 2026-03-16 at 12.51.02 AM.png>)
+
+### Cart
+
+![Cart screen](<./docs/Screenshot 2026-03-16 at 12.51.36 AM.png>)
+
+### History
+
+![History screen](<./docs/Screenshot 2026-03-16 at 12.52.16 AM.png>)
+
+### History Details
+
+![History details screen](<./docs/Screenshot 2026-03-16 at 12.53.00 AM.png>)
+
 ## Tech Stack
 
 - Client: React, TypeScript, Redux Toolkit, RTK Query, Tailwind CSS, Vitest, React Testing Library
